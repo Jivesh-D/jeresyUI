@@ -131,6 +131,10 @@ export function Login({ onSuccess }: LoginProps) {
       <p className="login-note">
         Jersey numbers are first come, first served. Each person can register one player only.
       </p>
+
+      <p className="login-credit">
+        Developed by <span className="login-credit-name">jettypooh</span>
+      </p>
     </div>
   )
 }
