@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { JerseyPreview } from './JerseyPreview'
 import { NumberPicker } from './NumberPicker'
-import type { Player } from '../types'
+import { JERSEY_SIZES, type Player } from '../types'
 
 interface PlayerFormProps {
   initial: Player
@@ -61,6 +61,10 @@ export function PlayerForm({ initial, takenNumbers, isEditing, onSubmit }: Playe
       setError('Enter your name.')
       return
     }
+    if (!player.jerseySize) {
+      setError('Select your jersey size.')
+      return
+    }
 
     setLoading(true)
     try {
@@ -73,7 +77,7 @@ export function PlayerForm({ initial, takenNumbers, isEditing, onSubmit }: Playe
     }
   }
 
-  const canSubmit = Boolean(player.jerseyNumber && player.name.trim())
+  const canSubmit = Boolean(player.jerseyNumber && player.name.trim() && player.jerseySize)
 
   return (
     <form onSubmit={handleSubmit} className="player-form">
@@ -141,6 +145,24 @@ export function PlayerForm({ initial, takenNumbers, isEditing, onSubmit }: Playe
                 disabled={loading}
               />
             </label>
+
+            <div className="field field-highlight">
+              <span>Jersey size</span>
+              <div className="size-picker" role="group" aria-label="Jersey size">
+                {JERSEY_SIZES.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    className={`size-cell${player.jerseySize === size ? ' selected' : ''}`}
+                    disabled={loading}
+                    aria-pressed={player.jerseySize === size}
+                    onClick={() => update('jerseySize', size)}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="claim-actions">
@@ -148,7 +170,7 @@ export function PlayerForm({ initial, takenNumbers, isEditing, onSubmit }: Playe
               {loading ? 'Saving…' : isEditing ? 'Update my jersey' : 'Claim jersey number'}
             </button>
             {!canSubmit && !loading && (
-              <p className="submit-hint">Select a jersey number and enter your name to continue.</p>
+              <p className="submit-hint">Select a jersey number, enter your name, and pick a size to continue.</p>
             )}
           </div>
         </div>

@@ -7,7 +7,7 @@ import { type Player } from './types'
 import './App.css'
 
 function App() {
-  const emptyPlayer = useMemo(() => ({ jerseyNumber: '', name: '', tagLine: '' }), [])
+  const emptyPlayer = useMemo(() => ({ jerseyNumber: '', name: '', tagLine: '', jerseySize: '' as const }), [])
   const [loading, setLoading] = useState(true)
   const [email, setEmail] = useState<string | null>(null)
   const [player, setPlayer] = useState<Player | null>(null)
@@ -121,6 +121,7 @@ function App() {
                   <th>#</th>
                   <th>Name</th>
                   <th>Tag Line</th>
+                  <th>Size</th>
                 </tr>
               </thead>
               <tbody>
@@ -129,6 +130,7 @@ function App() {
                     <td className="roster-num">{p.jerseyNumber}</td>
                     <td>{p.name}</td>
                     <td className="roster-tag">{p.tagLine || '—'}</td>
+                    <td className="roster-size">{p.jerseySize || '—'}</td>
                   </tr>
                 ))}
               </tbody>

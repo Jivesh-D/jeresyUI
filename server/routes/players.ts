@@ -5,6 +5,7 @@ import {
   getPlayerByEmail,
   getTakenNumbers,
   isJerseyTaken,
+  JERSEY_SIZES,
   updatePlayer,
 } from '../db.js'
 import { requireAuth } from '../middleware.js'
@@ -15,6 +16,7 @@ function validateSubmission(body: Record<string, unknown>) {
   const jerseyNumber = String(body.jerseyNumber ?? '').trim()
   const name = String(body.name ?? '').trim()
   const tagLine = String(body.tagLine ?? '').trim()
+  const jerseySize = String(body.jerseySize ?? '').trim().toUpperCase()
 
   if (!/^\d{1,3}$/.test(jerseyNumber)) {
     return { error: 'Jersey number must be 1–3 digits' }
@@ -28,14 +30,21 @@ function validateSubmission(body: Record<string, unknown>) {
   if (tagLine.length > 24) {
     return { error: 'Tag line must be 24 characters or less' }
   }
+  if (!jerseySize) {
+    return { error: 'Jersey size is required' }
+  }
+  if (!JERSEY_SIZES.includes(jerseySize as (typeof JERSEY_SIZES)[number])) {
+    return { error: 'Invalid jersey size' }
+  }
 
-  return { jerseyNumber, name, tagLine }
+  return { jerseyNumber, name, tagLine, jerseySize }
 }
 
 function toPublicPlayer(p: {
   jersey_number: string
   name: string
   tag_line: string
+  jersey_size: string
   email: string
   created_at: number
 }) {
@@ -43,6 +52,7 @@ function toPublicPlayer(p: {
     jerseyNumber: p.jersey_number,
     name: p.name,
     tagLine: p.tag_line,
+    jerseySize: p.jersey_size,
     createdAt: p.created_at,
   }
 }
@@ -71,7 +81,7 @@ router.post('/', requireAuth, (req, res) => {
     return
   }
 
-  const { jerseyNumber, name, tagLine } = validated
+  const { jerseyNumber, name, tagLine, jerseySize } = validated
 
   if (isJerseyTaken(jerseyNumber)) {
     res.status(409).json({ error: `Jersey #${jerseyNumber} was just taken. Pick another number.` })
@@ -79,7 +89,7 @@ router.post('/', requireAuth, (req, res) => {
   }
 
   try {
-    const player = createPlayer(email, jerseyNumber, name, tagLine)
+    const player = createPlayer(email, jerseyNumber, name, tagLine, jerseySize)
     res.status(201).json({ player: toPublicPlayer(player) })
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : ''
@@ -110,7 +120,7 @@ router.put('/me', requireAuth, (req, res) => {
     return
   }
 
-  const { jerseyNumber, name, tagLine } = validated
+  const { jerseyNumber, name, tagLine, jerseySize } = validated
 
   if (jerseyNumber !== existing.jersey_number && isJerseyTaken(jerseyNumber, email)) {
     res.status(409).json({ error: `Jersey #${jerseyNumber} was just taken. Pick another number.` })
@@ -118,7 +128,7 @@ router.put('/me', requireAuth, (req, res) => {
   }
 
   try {
-    const player = updatePlayer(email, jerseyNumber, name, tagLine)
+    const player = updatePlayer(email, jerseyNumber, name, tagLine, jerseySize)
     res.json({ player: player ? toPublicPlayer(player) : null })
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : ''
@@ -138,9 +148,9 @@ router.get('/export', (req, res) => {
   }
 
   const players = getAllPlayers()
-  const header = 'Jersey Number,Name,Tag Line,Email,Created At'
+  const header = 'Jersey Number,Name,Tag Line,Jersey Size,Email,Created At'
   const rows = players.map((p) =>
-    [p.jersey_number, p.name, p.tag_line, p.email, new Date(p.created_at).toISOString()]
+    [p.jersey_number, p.name, p.tag_line, p.jersey_size, p.email, new Date(p.created_at).toISOString()]
       .map((v) => `"${String(v).replace(/"/g, '""')}"`)
       .join(','),
   )

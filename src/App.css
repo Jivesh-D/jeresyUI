@@ -439,6 +439,46 @@
   opacity: 1;
 }
 
+.size-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.size-cell {
+  min-width: 2.75rem;
+  padding: 0.55rem 0.65rem;
+  border: 2px solid #4ade80;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--text-h);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.size-cell:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: #f0fdf4;
+}
+
+.size-cell.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.size-cell:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.roster-size {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 .claim-actions {
   margin-top: 1.75rem;
   display: flex;

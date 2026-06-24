@@ -76,6 +76,7 @@ router.get('/me', requireAuth, (req, res) => {
           jerseyNumber: player.jersey_number,
           name: player.name,
           tagLine: player.tag_line,
+          jerseySize: player.jersey_size,
           createdAt: player.created_at,
           updatedAt: player.updated_at,
         }

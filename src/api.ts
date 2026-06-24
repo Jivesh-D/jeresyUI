@@ -1,7 +1,10 @@
+import type { JerseySize } from './types'
+
 export interface Player {
   jerseyNumber: string
   name: string
   tagLine: string
+  jerseySize: JerseySize | ''
   createdAt?: number
   updatedAt?: number
 }
@@ -15,6 +18,7 @@ export interface PublicPlayer {
   jerseyNumber: string
   name: string
   tagLine: string
+  jerseySize: JerseySize | ''
   createdAt: number
 }
 

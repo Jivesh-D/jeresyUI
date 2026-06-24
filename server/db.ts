@@ -22,10 +22,19 @@ db.exec(`
     jersey_number TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
     tag_line TEXT NOT NULL DEFAULT '',
+    jersey_size TEXT NOT NULL DEFAULT '',
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL
   );
 `)
+
+const playerColumns = db.prepare('PRAGMA table_info(players)').all() as { name: string }[]
+if (!playerColumns.some((col) => col.name === 'jersey_size')) {
+  db.exec(`ALTER TABLE players ADD COLUMN jersey_size TEXT NOT NULL DEFAULT ''`)
+}
+
+export const JERSEY_SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'] as const
+export type JerseySize = (typeof JERSEY_SIZES)[number]
 
 export interface PlayerRow {
   id: number
@@ -33,6 +42,7 @@ export interface PlayerRow {
   jersey_number: string
   name: string
   tag_line: string
+  jersey_size: string
   created_at: number
   updated_at: number
 }
@@ -82,14 +92,15 @@ export function createPlayer(
   jerseyNumber: string,
   name: string,
   tagLine: string,
+  jerseySize: string,
 ): PlayerRow {
   const now = Date.now()
   const result = db
     .prepare(
-      `INSERT INTO players (email, jersey_number, name, tag_line, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO players (email, jersey_number, name, tag_line, jersey_size, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
     )
-    .run(email, jerseyNumber, name, tagLine, now, now)
+    .run(email, jerseyNumber, name, tagLine, jerseySize, now, now)
 
   return db.prepare('SELECT * FROM players WHERE id = ?').get(result.lastInsertRowid) as PlayerRow
 }
@@ -99,15 +110,16 @@ export function updatePlayer(
   jerseyNumber: string,
   name: string,
   tagLine: string,
+  jerseySize: string,
 ): PlayerRow | undefined {
   const now = Date.now()
   const result = db
     .prepare(
       `UPDATE players
-       SET jersey_number = ?, name = ?, tag_line = ?, updated_at = ?
+       SET jersey_number = ?, name = ?, tag_line = ?, jersey_size = ?, updated_at = ?
        WHERE email = ?`,
     )
-    .run(jerseyNumber, name, tagLine, now, email)
+    .run(jerseyNumber, name, tagLine, jerseySize, now, email)
 
   if (result.changes === 0) return undefined
   return getPlayerByEmail(email)
