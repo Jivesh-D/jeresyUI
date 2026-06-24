@@ -21,7 +21,8 @@
     "jsonwebtoken": "^9.0.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "resend": "^4.5.1"
+    "resend": "^4.5.1",
+    "tsx": "^4.19.4"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
@@ -35,7 +36,6 @@
     "@vitejs/plugin-react": "^6.0.2",
     "concurrently": "^9.1.2",
     "oxlint": "^1.69.0",
-    "tsx": "^4.19.4",
     "typescript": "~6.0.2",
     "vite": "^8.1.0"
   }

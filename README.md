@@ -60,6 +60,6 @@ Host the container on [Railway](https://railway.app), [Render](https://render.co
 
 1. Connect this repo
 2. Set build command: `npm install && npm run build`
-3. Set start command: `npx tsx server/index.ts`
+3. Set start command: `npm start`
 4. Add env vars from `.env.example`
 5. Attach a persistent volume at `/app/data` for the SQLite database
