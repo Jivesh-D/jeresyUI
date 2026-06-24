@@ -56,10 +56,8 @@ export function Login({ onSuccess }: LoginProps) {
 
       {config?.resendTestMode && (
         <div className="alert alert-info" role="status">
-          <strong>Test mode.</strong> OTP emails go to{' '}
-          <strong>{config.testRecipient ?? 'the server console'}</strong> only (Resend sandbox).
-          Use any <strong>@dcluttr.ai</strong> email to sign in — check that inbox or the server
-          terminal for the code.
+          OTP emails go to <strong>{config.testRecipient}</strong>. Use any{' '}
+          <strong>@dcluttr.ai</strong> email to sign in — check that inbox.
         </div>
       )}
 
